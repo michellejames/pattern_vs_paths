@@ -1,151 +1,79 @@
-"use strict";
+'use strict';
 
 console.log("Hello World from app.js!");
 
-var pattern = ["*,2,3", "question, everything", "does, it, *", "mic, check", "a,b,c", "c,*,*", "5"];
+var fs = require('fs');
+fs.readFile('../../input_file.txt', 'utf8', function (err, data) {
+  if (err) throw err;
+  // console.log(data);
 
-var patternLength = pattern.length;
+  var lines = data.split('\n');
 
-var paths = ["/1/2/3", "question/everything/you/hear", "does/", "mic/check", "/a/b/c/", "3", "c,5,y"];
+  var integerN = parseInt(lines[0]); //20
+  var integerM = parseInt(lines[integerN + 1]);
 
-var pathLength = paths.length;
+  var pattern = [];
+  var paths = [];
 
-for (var i = paths.length - 1; i >= 0; i--) {
-	var checkForSlash = function checkForSlash() {
-		//Check if first letter is a slash
-		if (paths[i].charAt(0) == "/") {
-			var updatedStartPath = paths[i].substr(1);
+  for (var i = 1; i <= integerN; i++) {
+    pattern.push(lines[i]);
+  }
 
-			if (updatedStartPath.substr(-1) == "/") {
-				var finalStartPath = updatedStartPath.slice(0, -1);
-				console.log(finalStartPath);
-			}
-		}
+  for (var j = integerN + 2; j <= integerN + integerM + 1; j++) {
+    paths.push(lines[j]);
+  }
 
-		//Check if last letter is a slash
-		if (paths[i].substr(-1) == "/") {
-			var updatedEndPath = paths[i].slice(0, -1);
+  //Algorithmic Complexity of two nested loops: O(n²).
+  //The inner loop is executed i times, for each value of i. The outer loop is executed n times. --> O(n²).
 
-			if (updatedEndPath.charAt(0) == "/") {
-				var finalEndPath = updatedEndPath.substr(1);
-				console.log(finalEndPath);
-			}
-		}
-	};
+  for (var i = pattern.length - 1; i >= 0; i--) {
 
-	var replaceSlashes = function replaceSlashes() {
-		var replacedPath = paths[i].replace(/\//g, ",");
-		// console.log(replacedPath);
+    for (var j = paths.length - 1; j >= 0; j--) {
 
-		//Check if first letter is a comma
-		if (replacedPath.charAt(0) == ",") {
-			var transformedStartPath = replacedPath.substr(1);
-			// console.log(transformedStartPath);
+      var cleanPath = removeSlashes(paths[j]);
 
-			if (transformedStartPath.substr(-1) == ",") {
-				var changedStartPath = transformedStartPath.slice(0, -1);
-				console.log(changedStartPath);
-			}
-		}
+      var matches = compare(pattern[i], cleanPath);
 
-		//Check if last letter is a comma
-		if (replacedPath.substr(-1) == ",") {
-			var updatedEndPath = replacedPath.slice(0, -1);
+      if (matches) {
+        console.log('pattern and path that match: ' + pattern[i] + ' and ' + cleanPath);
+      }
+    }
+  }
+});
 
-			if (updatedEndPath.charAt(0) == ",") {
-				var changedEndPath = updatedEndPath.substr(1);
-				console.log(changedEndPath);
-			}
-		}
-	};
+function compare(pattern, paths) {
 
-	checkForSlash();
+  var splitPattern = pattern.split(",");
+  var splitPaths = paths.split("/");
+  // console.log(splitPaths, splitPattern);
 
-	replaceSlashes();
+  if (splitPattern.length != splitPaths.length) {
+    return false;
+  }
+
+  for (var i = splitPattern.length - 1; i >= 0; i--) {
+    if (splitPattern[i] == "*") {
+      continue;
+    }
+
+    if (splitPattern[i] != splitPaths[i]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
-for (var i = pattern.length - 1; i >= 0; i--) {
-	var arraysEqual = function arraysEqual(pattern, paths) {
-		if (pattern[i] === paths[i]) {
-			console.log("match");
-			return true;
-		} else {
-			console.log("no match");
-			return false;
-		}
-	};
+function removeSlashes(path) {
 
-	arraysEqual(pattern, paths);
+  if (path.charAt(0) == "/") {
+    path = path.substr(1);
+  }
+
+  if (path.substr(-1) == "/") {
+    path = path.slice(0, -1);
+  }
+
+  return path;
 }
-
-// for (var i = paths.length - 1; i >= 0; i--) {
-
-// 	//Replace slashes with commas
-// 	// replaceSlashes();
-
-// 	//Check if first letter is a slash
-// 	if (paths[i].charAt(0) == "/") {
-// 		var updatedStartPath = paths[i].substr(1);
-// 		// console.log(updatedStartPath);
-// 	}
-
-// 	//Check if last letter is a slash
-// 	if (paths[i].substr(-1) == "/") {
-// 		var updatedEndPath = paths[i].slice(0, -1);
-// 		// console.log(updatedEndPath);
-// 	}
-
-// 	// checkForMatch();
-
-// 	function arraysEqual(pattern, paths) {
-// 	  if (pattern[i] === paths[i]) return true;
-// 	  if (pattern[i] == null || paths[i] == null) return false;
-// 	  if (pattern[i].length != paths[i].length) return false;
-
-// 	  return true;
-// 	}
-
-// 	console.log(arraysEqual(pattern, paths));
-
-// }
-
-
-// function replaceSlashes() {
-// 	paths[i].find(/\//g, ",");
-// 	console.log(replaceSlashes);
-// }
-
-// function checkForMatch() {
-// 	if (paths[i] == pattern[i]) {
-// 		console.log(pattern[i]);
-// 	}
-// }
-
-
-// function findPath(pattern) {
-//     var patternArray = pattern.split(',');
-//     var topCount = 0;
-//     var highestPath;
-//     for (var i = paths.length - 1; i >= 0; i--) {
-//         var arrayPath = paths[i].split('/');
-//         for (var i = arrayPath.length - 1; i >= 0; i--) {
-//             var count = 0;
-//             if(patternArray[i]) {
-//                 if( arrayPath[i] == patternArray[i] || patternArray[i] == '*') {
-//                     count++;
-//                 }
-//                 console.log(arrayPath[i] + ',' + patternArray[i]);
-//             } else  {
-//                 break
-//             }
-//             if (count > topCount) {
-//                 topCount = count;
-//                 thighestPath = arrayPath.toString();
-//             }
-//         }
-//     }
-//     console.log(highestPath);
-// }
-
-// findPath("a,b,c");
 //# sourceMappingURL=main.js.map
