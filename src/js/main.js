@@ -32,9 +32,16 @@ fs.readFile('../../input_file.txt', 'utf8', function(err, data) {
 
     		var matches = compare(pattern[i], cleanPath);
 
-    		if (matches) {
-    			console.log(`pattern and path that match: ${pattern[i]} and ${cleanPath}`);
-    		}
+
+            if (matches) {
+                //console.log(`pattern and path that match: ${pattern[i]} and ${cleanPath}`);
+                console.log(matches);
+            } else {
+                // console.log("No matches");
+            }
+
+            var bestMatch = findBestMatch(matches, 0);
+            // console.log(bestMatch);
     	}
     }
 });
@@ -46,21 +53,24 @@ function compare(pattern, paths) {
 	var splitPaths = paths.split("/");
 	// console.log(splitPaths, splitPattern);
 
-	if (splitPattern.length != splitPaths.length) {
-		return false;
-	}
+    if (splitPattern.length != splitPaths.length) {
+        return false;
+    } else {
+        var matches = [];
 
-	for (var i = splitPattern.length - 1; i >= 0; i--) {
-		if (splitPattern[i] == "*") {
-			continue;
-		}
+        matches.push(splitPattern, splitPaths);
+        return matches;
+    }
 
-		if (splitPattern[i] != splitPaths[i]) {
-			return false;
-		}
-	}
+    for (var i = splitPattern.length - 1; i >= 0; i--) {
+        if (splitPattern[i] == "*") {
+            continue;
+        }
 
-	return true;
+        if (splitPattern[i] != splitPaths[i]) {
+            return false;
+        } 
+    }
 }
 
 function removeSlashes(path) {
@@ -75,4 +85,71 @@ function removeSlashes(path) {
 
 	return path;
 }
+
+function findBestMatch(matches, y) {
+    var y = y || 0;
+    
+    if (matches.length === 1) {
+        // return matches[0];
+        console.log(matches, "only one match");
+    } else {
+        console.log("more matches");
+        var searching = true;
+        var x = 0;
+        var nextMatches = [];
+        var previousMatch = false;
+
+        // while (searching) {
+        //     var currentMatch = {
+        //         value: matches[x],
+        //     }
+
+        //     currentMatch.matchIndex = findMatchIndex(currentMatch, y);
+
+        //     if (!previousMatch) {
+        //         previousMatch = currentMatch;
+        //         return;
+        //     } else if (currentMatch.matchIndex < previousMatch.matchIndex) {
+        //         previousMatch = currentMatch;
+        //     } else if (currentMatch.matchIndex === previousMatch.matchIndex) {
+        //         nextMatches.push(currentMatch);
+        //     }
+
+        //     if (x === matches.length) {
+        //         searching = false;
+        //     } else if (x < matches.length) {
+        //         x++;
+        //     }
+        // }
+
+        // if (filteredMatches.length) {
+        //     findBestMatch(filteredMatches, y++);
+        // }
+    }
+} 
+
+// function findMatchIndex(path, y) {
+//     var x = 0;
+//     while (x < y + 1) {
+
+//         for (i = 0; i < path.length - 1; i++) {
+//             if (path[i] !== pattern[i]) {
+//                 continue;
+//             } else if (path[i] === pattern[i] && x === y) {
+//                 currentMatchmatchIndex = i;
+//                 path.matchIndex = currentMatch[i];
+//                 break;
+//             } else if (path[i] === pattern[i] && x < y) {
+//                 x++;
+//             }
+//         }
+//     }
+// }
+
+
+
+
+
+
+
 
